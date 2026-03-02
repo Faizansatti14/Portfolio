@@ -6,7 +6,7 @@ const app = express();
 const port = 3001;
 
 // Initialize Resend with your API key
-const resend = new Resend('re_7iKibE2d_HAX9agvwPnnpLxHKXsjzHouV'); 
+const resend = new Resend(''); 
 
 // Middleware
 app.use(cors());
