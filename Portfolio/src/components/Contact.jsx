@@ -18,9 +18,8 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
     try {
-      const response = await fetch(`${apiUrl}/send-email`, {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
