@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "cd Portfolio && npm run build"
+  },
   "dependencies": {
     "dotenv": "^17.4.2"
   }
