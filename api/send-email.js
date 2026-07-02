@@ -10,12 +10,46 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const parseBody = (req) => new Promise((resolve, reject) => {
+  if (req.body) {
+    resolve(req.body);
+    return;
+  }
+
+  let body = '';
+  req.setEncoding('utf8');
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
+  req.on('end', () => {
+    if (!body) {
+      resolve({});
+      return;
+    }
+
+    try {
+      resolve(JSON.parse(body));
+    } catch {
+      resolve({});
+    }
+  });
+  req.on('error', reject);
+});
+
 module.exports = async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const { name, email, message } = req.body;
+  const body = await parseBody(req);
+  const { name, email, message } = body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -27,6 +61,8 @@ module.exports = async (req, res) => {
   }
 
   try {
+    await transporter.verify();
+
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || `Portfolio Contact <${process.env.SMTP_USER}>`,
       to: process.env.SMTP_TO || 'sattifaizan053@gmail.com',
@@ -44,7 +80,7 @@ module.exports = async (req, res) => {
     console.log('Email sent successfully:', info.messageId || info.response);
     return res.status(200).json({ message: 'Email sent successfully!' });
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('SMTP send failed:', error);
     return res.status(500).json({ message: 'Error sending email.', error: error.message });
   }
 };
