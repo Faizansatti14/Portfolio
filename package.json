@@ -3,6 +3,7 @@
     "build": "cd Portfolio && npm install && npm run build"
   },
   "dependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "nodemailer": "^7.0.6"
   }
 }

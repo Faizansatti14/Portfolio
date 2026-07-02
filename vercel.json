@@ -6,14 +6,8 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "Portfolio/api/**/*.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/Portfolio/api/$1"
     }
   ]
 }
