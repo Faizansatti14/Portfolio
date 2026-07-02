@@ -1,4 +1,19 @@
 {
-  "buildCommand": "cd Portfolio && npm install && npm run build",
-  "outputDirectory": "Portfolio/dist"
+  "builds": [
+    {
+      "src": "Portfolio/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "Portfolio/api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/Portfolio/api/$1"
+    }
+  ]
 }
