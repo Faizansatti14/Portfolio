@@ -51,7 +51,14 @@ cd portfolio
 npm install
 ```
 
-3. Start the development server:
+3. Copy environment variables for the backend server:
+```bash
+cp Portfolio/backend/.env.example Portfolio/backend/.env
+```
+
+4. Set SMTP credentials in `Portfolio/backend/.env` for local testing, and in the Vercel dashboard for production.
+
+5. Start the development server:
 ```bash
 npm run dev
 ```
@@ -64,7 +71,23 @@ npm run dev
 npm run build
 ```
 
-## 📁 Project Structure
+## � Environment Variables
+
+Create local SMTP settings in `Portfolio/backend/.env` and add the same values to your Vercel project settings:
+
+```text
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+SMTP_FROM="Portfolio Contact <no-reply@example.com>"
+SMTP_TO=sattifaizan053@gmail.com
+```
+
+Then continue with the normal install and dev steps.
+
+## �📁 Project Structure
 
 ```
 src/

@@ -1,25 +1,41 @@
 const express = require('express');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
-// Initialize Resend with your API key
-const resend = new Resend(process.env.RESEND_API_KEY); 
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT || 587),
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
 app.post('/send-email', async (req, res) => {
   const { name, email, message } = req.body;
 
+  if (!name || !email || !message) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  if (!process.env.SMTP_HOST || !process.env.SMTP_PORT || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.error('SMTP configuration is incomplete.');
+    return res.status(500).json({ message: 'SMTP configuration is incomplete.' });
+  }
+
   try {
-    // Send email using Resend
-    const data = await resend.emails.send({
-      from: 'Portfolio Contact <onboarding@resend.dev>', // You can change this to your verified domain later
-      to: ['sattifaizan053@gmail.com'],
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || `Portfolio Contact <${process.env.SMTP_USER}>`,
+      to: process.env.SMTP_TO || 'sattifaizan053@gmail.com',
+      replyTo: email,
       subject: `New message from ${name} via Portfolio Contact Form`,
       html: `
         <h3>New Contact Form Submission</h3>
@@ -27,10 +43,10 @@ app.post('/send-email', async (req, res) => {
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong></p>
         <p>${message}</p>
-      `
+      `,
     });
 
-    console.log('Email sent successfully:', data);
+    console.log('Email sent successfully:', info.messageId || info.response);
     res.status(200).json({ message: 'Email sent successfully!' });
   } catch (error) {
     console.error('Error sending email:', error);
