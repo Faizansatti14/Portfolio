@@ -27,10 +27,17 @@ const Contact = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data = {};
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        data = { message: responseText || 'Unexpected response from server.' };
+      }
 
       if (response.ok) {
-        console.log(data.message);
+        console.log(data.message || 'Message sent successfully!');
         alert('Message sent successfully!');
         setFormData({ name: '', email: '', message: '' });
       } else {
